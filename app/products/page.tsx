@@ -22,7 +22,9 @@ type ImportRow={
   stock:number;
 };
 
-type ImportPreview={rows:ImportRow[]; invalid:number; fileName:string};
+type ImportIssue={row:number;reason:string};
+type ImportPreview={rows:ImportRow[];invalid:number;issues:ImportIssue[];fileName:string;totalRows:number};
+type ImportReport={total:number;inserted:number;updated:number;skipped:number;failed:number;issues:ImportIssue[]};
 
 const normalize=(value:unknown)=>String(value??'').trim();
 const normalizeKey=(value:unknown)=>normalize(value).toLowerCase().replace(/\s+/g,' ');
@@ -64,24 +66,48 @@ function parseCsvText(text:string){
   }
   row.push(cell);
   if(row.some(value=>value.trim()!==''))records.push(row);
-  if(records.length<2)return {rows:[] as ImportRow[],invalid:0};
+  if(records.length<2)return {rows:[] as ImportRow[],invalid:0,issues:[] as ImportIssue[],totalRows:0};
+
   const headers=records[0].map(normalize);
+  const requiredHeaders=[
+    {key:'sku',aliases:['sku','mã sản phẩm','ma san pham','mã sp','ma sp']},
+    {key:'name',aliases:['name','tên sản phẩm','ten san pham','sản phẩm','san pham']},
+    {key:'unit',aliases:['unit','đvt','dvt','đơn vị tính','don vi tinh']},
+    {key:'light_attribute',aliases:['light_attribute','ánh sáng','anh sang','thuộc tính','thuoc tinh']},
+    {key:'price',aliases:['price','giá','gia','giá bán','gia ban']},
+    {key:'stock',aliases:['stock','tồn','ton','tồn kho','ton kho']},
+  ];
+  const missing=requiredHeaders.filter(item=>!headers.some(header=>item.aliases.some(alias=>normalizeKey(header)===normalizeKey(alias))));
+  if(missing.length){
+    return {rows:[] as ImportRow[],invalid:records.length-1,issues:[{row:1,reason:`Thiếu cột bắt buộc: ${missing.map(x=>x.key).join(', ')}`}],totalRows:records.length-1};
+  }
+
   const raw=records.slice(1).map(values=>Object.fromEntries(headers.map((header,index)=>[header,values[index]??''])));
-  let invalid=0;
+  const issues:ImportIssue[]=[];
   const rows:ImportRow[]=[];
-  raw.forEach(row=>{
+  raw.forEach((row,index)=>{
+    const rowNumber=index+2;
     const sku=normalize(getCell(row,['sku','mã sản phẩm','ma san pham','mã sp','ma sp'])).toUpperCase();
     const name=normalize(getCell(row,['name','tên sản phẩm','ten san pham','sản phẩm','san pham']));
-    const unit=normalize(getCell(row,['unit','đvt','dvt','đơn vị tính','don vi tinh']))||'Cái';
-    const light_attribute=normalize(getCell(row,['light_attribute','ánh sáng','anh sang','thuộc tính','thuoc tinh']))||'Không áp dụng';
-    const price=Math.max(0,numberValue(getCell(row,['price','giá','gia','giá bán','gia ban'])));
-    const stock=Math.max(0,Math.floor(numberValue(getCell(row,['stock','tồn','ton','tồn kho','ton kho']))));
-    if(!sku||!name){invalid++;return;}
-    rows.push({sku,name,unit,light_attribute,price,stock});
+    const unit=normalize(getCell(row,['unit','đvt','dvt','đơn vị tính','don vi tinh']));
+    const lightRaw=normalize(getCell(row,['light_attribute','ánh sáng','anh sang','thuộc tính','thuoc tinh']));
+    const priceRaw=normalize(getCell(row,['price','giá','gia','giá bán','gia ban']));
+    const stockRaw=normalize(getCell(row,['stock','tồn','ton','tồn kho','ton kho']));
+    const reasons:string[]=[];
+    if(!sku)reasons.push('Thiếu mã sản phẩm');
+    if(!name)reasons.push('Thiếu tên sản phẩm');
+    if(!unit)reasons.push('Thiếu đơn vị tính');
+    if(priceRaw==='')reasons.push('Thiếu giá bán');
+    if(stockRaw==='')reasons.push('Thiếu tồn kho');
+    const price=numberValue(priceRaw);
+    const stock=numberValue(stockRaw);
+    if(priceRaw!==''&&(!Number.isFinite(price)||price<0))reasons.push('Giá bán không hợp lệ');
+    if(stockRaw!==''&&(!Number.isInteger(stock)||stock<0))reasons.push('Tồn kho phải là số nguyên từ 0 trở lên');
+    if(reasons.length){issues.push({row:rowNumber,reason:reasons.join('; ')});return;}
+    rows.push({sku,name,unit,light_attribute:lightRaw||'Không áp dụng',price:Math.max(0,price),stock:Math.max(0,Math.floor(stock))});
   });
-  return {rows,invalid};
+  return {rows,invalid:issues.length,issues,totalRows:raw.length};
 }
-
 function csvEscape(value:unknown){
   const text=String(value??'');
   return /[",\r\n]/.test(text)?`"${text.replace(/"/g,'""')}"`:text;
@@ -116,6 +142,7 @@ export default function Page(){
  const[importPreview,setImportPreview]=useState<ImportPreview|null>(null);
  const[showImport,setShowImport]=useState(false);
  const[showBulk,setShowBulk]=useState(false);
+ const[importReport,setImportReport]=useState<ImportReport|null>(null);
  const[bulkPrice,setBulkPrice]=useState('');
  const[bulkStock,setBulkStock]=useState('');
  const[fileDrag,setFileDrag]=useState(false);
@@ -230,20 +257,28 @@ export default function Page(){
  async function importProducts(){
    if(!importPreview)return;
    setBusy(true);
-   const existing=data;
+   const existing=[...data];
    let inserted=0,updated=0,failed=0;
-   for(const row of importPreview.rows){
+   const issues:ImportIssue[]=[...importPreview.issues];
+   for(let index=0;index<importPreview.rows.length;index++){
+     const row=importPreview.rows[index];
+     const sourceRow=index+2;
      const match=existing.find(x=>normalizeKey(x.sku)===normalizeKey(row.sku)&&normalizeKey(x.name)===normalizeKey(row.name)&&normalizeKey(x.light_attribute||'')===normalizeKey(row.light_attribute));
      const result=match
        ? await supabase.from('products').update(row).eq('id',match.id)
-       : await supabase.from('products').insert(row);
-     if(result.error)failed++; else match?updated++:inserted++;
+       : await supabase.from('products').insert(row).select('*').single();
+     if(result.error){failed++;issues.push({row:sourceRow,reason:result.error.message});}
+     else if(match)updated++;
+     else{
+       inserted++;
+       if(result.data)existing.push(result.data as Product);
+     }
    }
-   setBusy(false);setShowImport(false);setImportPreview(null);
-   toast(`Nhập hoàn tất: thêm ${inserted}, cập nhật ${updated}${failed?`, lỗi ${failed}`:''}`,failed>0);
+   const report:ImportReport={total:importPreview.totalRows,inserted,updated,skipped:importPreview.invalid,failed,issues};
+   setBusy(false);setShowImport(false);setImportPreview(null);setImportReport(report);
+   toast(`Nhập CSV hoàn tất: thêm ${inserted}, cập nhật ${updated}, bỏ qua ${report.skipped}, lỗi ${failed}`,failed>0||report.skipped>0);
    load();
  }
-
  function backupData(){
    const payload={version:'3.1',exported_at:new Date().toISOString(),products:data.map(({id,created_at,...rest})=>rest)};
    downloadBlob(JSON.stringify(payload,null,2),`vh-lighting-products-backup-${new Date().toISOString().slice(0,10)}.json`,'application/json;charset=utf-8');
@@ -254,7 +289,7 @@ export default function Page(){
    try{
      const json=JSON.parse(await file.text()) as {products?:ImportRow[]};
      if(!Array.isArray(json.products)||!json.products.length)throw new Error('File backup không hợp lệ');
-     setImportPreview({rows:json.products.map(x=>({...x,sku:normalize(x.sku).toUpperCase(),price:Math.max(0,numberValue(x.price)),stock:Math.max(0,Math.floor(numberValue(x.stock)))})),invalid:0,fileName:file.name});
+     setImportPreview({rows:json.products.map(x=>({...x,sku:normalize(x.sku).toUpperCase(),price:Math.max(0,numberValue(x.price)),stock:Math.max(0,Math.floor(numberValue(x.stock)))})),invalid:0,issues:[],fileName:file.name,totalRows:json.products.length});
      setShowImport(true);
    }catch(err){toast(err instanceof Error?err.message:'Không đọc được file backup',true)}finally{e.target.value=''}
  }
@@ -295,7 +330,9 @@ export default function Page(){
   </section>
  </div>
 
- {showImport&&importPreview&&<div className="modal-backdrop"><div className="modal-card import-modal"><div className="modal-header"><div><h3>Nhập sản phẩm từ CSV</h3><p>{importPreview.fileName}</p></div><button type="button" className="icon-close" onClick={()=>{setShowImport(false);setImportPreview(null)}}><X size={20}/></button></div><div className="import-summary"><div><b>{importPreview.rows.length}</b><span>Dòng hợp lệ</span></div><div><b>{importPreview.invalid}</b><span>Dòng bỏ qua</span></div></div><div className="import-preview-table"><table><thead><tr><th>SKU</th><th>Tên sản phẩm</th><th>Ánh sáng</th><th>Giá</th><th>Tồn</th></tr></thead><tbody>{importPreview.rows.slice(0,8).map((x,i)=><tr key={`${x.sku}-${i}`}><td>{x.sku}</td><td>{x.name}</td><td>{x.light_attribute}</td><td>{x.price.toLocaleString('vi-VN')}</td><td>{x.stock}</td></tr>)}</tbody></table>{importPreview.rows.length>8&&<p className="import-more">Và {importPreview.rows.length-8} dòng khác…</p>}</div><div className="modal-note">Sản phẩm trùng <b>mã + tên + ánh sáng</b> sẽ được cập nhật giá và tồn kho. Sản phẩm mới sẽ được thêm vào.</div><div className="modal-actions"><button type="button" className="secondary" onClick={()=>{setShowImport(false);setImportPreview(null)}}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={importProducts}>{busy?'Đang nhập…':`Nhập ${importPreview.rows.length} sản phẩm`}</button></div></div></div>}
+ {showImport&&importPreview&&<div className="modal-backdrop"><div className="modal-card import-modal"><div className="modal-header"><div><h3>Nhập sản phẩm từ CSV</h3><p>{importPreview.fileName}</p></div><button type="button" className="icon-close" onClick={()=>{setShowImport(false);setImportPreview(null)}}><X size={20}/></button></div><div className="import-summary"><div><b>{importPreview.totalRows}</b><span>Tổng số dòng</span></div><div><b>{importPreview.rows.length}</b><span>Dòng hợp lệ</span></div><div><b>{importPreview.invalid}</b><span>Dòng bỏ qua</span></div></div><div className="import-preview-table"><table><thead><tr><th>SKU</th><th>Tên sản phẩm</th><th>ĐVT</th><th>Ánh sáng</th><th>Giá</th><th>Tồn</th></tr></thead><tbody>{importPreview.rows.slice(0,8).map((x,i)=><tr key={`${x.sku}-${i}`}><td>{x.sku}</td><td>{x.name}</td><td>{x.unit}</td><td>{x.light_attribute}</td><td>{x.price.toLocaleString('vi-VN')}</td><td>{x.stock}</td></tr>)}</tbody></table>{importPreview.rows.length>8&&<p className="import-more">Và {importPreview.rows.length-8} dòng khác…</p>}{importPreview.issues.length>0&&<div className="import-issues"><b>Các dòng bị bỏ qua</b>{importPreview.issues.slice(0,8).map((issue,i)=><p key={i}>Dòng {issue.row}: {issue.reason}</p>)}</div>}</div><div className="modal-note">Sản phẩm trùng <b>mã + tên + ánh sáng</b> sẽ được cập nhật giá và tồn kho. Sản phẩm mới sẽ được thêm vào.</div><div className="modal-actions"><button type="button" className="secondary" onClick={()=>{setShowImport(false);setImportPreview(null)}}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={importProducts}>{busy?'Đang nhập…':`Nhập ${importPreview.rows.length} sản phẩm`}</button></div></div></div>}
+
+ {importReport&&<div className="modal-backdrop"><div className="modal-card import-report-modal"><div className="modal-header"><div><h3>Kết quả nhập sản phẩm</h3><p>Báo cáo chi tiết sau khi xử lý file CSV</p></div><button type="button" className="icon-close" onClick={()=>setImportReport(null)}><X size={20}/></button></div><div className="import-report-grid"><div><b>{importReport.total}</b><span>Tổng số dòng</span></div><div className="report-success"><b>{importReport.inserted}</b><span>Thêm mới</span></div><div className="report-update"><b>{importReport.updated}</b><span>Cập nhật</span></div><div className="report-skip"><b>{importReport.skipped}</b><span>Bỏ qua</span></div><div className="report-error"><b>{importReport.failed}</b><span>Lỗi hệ thống</span></div></div>{importReport.issues.length>0?<div className="report-issues"><h4>Chi tiết dòng chưa nhập được</h4>{importReport.issues.map((issue,i)=><div key={i}><b>Dòng {issue.row}</b><span>{issue.reason}</span></div>)}</div>:<div className="report-all-good">Tất cả dữ liệu hợp lệ đã được nhập thành công.</div>}<div className="modal-actions"><button type="button" className="primary" onClick={()=>setImportReport(null)}>Đóng báo cáo</button></div></div></div>}
 
  {showBulk&&<div className="modal-backdrop"><div className="modal-card bulk-modal"><div className="modal-header"><div><h3>Cập nhật hàng loạt</h3><p>Áp dụng cho {selectedProducts.length} sản phẩm đã chọn</p></div><button type="button" className="icon-close" onClick={()=>setShowBulk(false)}><X size={20}/></button></div><label>Giá bán mới <span>(bỏ trống để giữ nguyên)</span><input type="number" min="0" value={bulkPrice} onChange={e=>setBulkPrice(e.target.value)} placeholder="Ví dụ: 120000"/></label><label>Tồn kho mới <span>(bỏ trống để giữ nguyên)</span><input type="number" min="0" value={bulkStock} onChange={e=>setBulkStock(e.target.value)} placeholder="Ví dụ: 100"/></label><div className="modal-actions"><button type="button" className="secondary" onClick={()=>setShowBulk(false)}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={applyBulkUpdate}>{busy?'Đang cập nhật…':'Cập nhật sản phẩm'}</button></div></div></div>}
  </AppShell></AuthGuard>

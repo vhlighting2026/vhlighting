@@ -33,7 +33,20 @@ export default function Page() {
       <section className="a5-customer"><p><span>Khách hàng:</span><b>{order.customer_name||"Khách lẻ"}</b></p><p><span>Điện thoại:</span><b>{order.customer_phone||"—"}</b></p><p><span>Địa chỉ / Công trình:</span><b>{order.customer_address||"—"}</b></p></section>
       <table className="a5-table"><thead><tr><th>STT</th><th>Sản phẩm</th><th>ĐVT</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>{items.map((x,i)=><tr key={x.id||i}><td>{i+1}</td><td><b>{x.product_name}</b>{x.light_attribute&&<small>{x.sku} · {x.light_attribute}</small>}</td><td>{x.unit}</td><td>{x.quantity}</td><td>{money(x.unit_price)}</td><td>{money(x.line_total)}</td></tr>)}</tbody></table>
       <section className="a5-note-total"><div className="a5-note"><h3>GHI CHÚ</h3>{order.note&&<p>{order.note}</p>}</div><table className="a5-total"><tbody><tr><td>Tạm tính</td><td>{money(order.subtotal)} đ</td></tr><tr><td>Chiết khấu</td><td>{money(order.discount)} đ</td></tr><tr><td>Phí vận chuyển</td><td>{money(order.shipping_fee||0)} đ</td></tr><tr className="a5-grand"><td>TỔNG THANH TOÁN</td><td>{money(order.total)} đ</td></tr></tbody></table></section>
-      <section className="a5-bank"><h3>THÔNG TIN CHUYỂN KHOẢN</h3><div className="a5-bank-body">{qrUrl?<img src={qrUrl} alt="QR ngân hàng công ty"/>:<div className="a5-qr-empty">CHƯA CÓ QR</div>}<div><p><span>Ngân hàng:</span><b>{company.bank_name||"—"}</b></p><p><span>Số tài khoản:</span><b>{company.bank_account||"—"}</b></p><p><span>Chủ tài khoản:</span><b>{company.bank_holder||"—"}</b></p>{company.bank_branch&&<p><span>Chi nhánh:</span><b>{company.bank_branch}</b></p>}<em>Quét mã QR để chuyển khoản</em></div></div></section>
+      <section className="a5-bank">
+        <h3><span>THÔNG TIN CHUYỂN KHOẢN</span></h3>
+        <div className="a5-bank-body">
+          <div className="a5-bank-info">
+            <div className="a5-bank-name">{company.bank_name||"NGÂN HÀNG"}</div>
+            <p><span>NGÂN HÀNG</span><b>{company.bank_name||"—"}</b></p>
+            <p><span>SỐ TÀI KHOẢN</span><b className="a5-account-number">{company.bank_account||"—"}</b></p>
+            <p><span>CHỦ TÀI KHOẢN</span><b>{company.bank_holder||"—"}</b></p>
+            {company.bank_branch&&<p><span>CHI NHÁNH</span><b>{company.bank_branch}</b></p>}
+            <em>Quét mã QR để chuyển khoản</em>
+          </div>
+          <div className="a5-qr-wrap">{qrUrl?<img src={qrUrl} alt="QR ngân hàng công ty"/>:<div className="a5-qr-empty">CHƯA CÓ QR</div>}<strong>VIETQR</strong></div>
+        </div>
+      </section>
       <section className="a5-signatures"><div><b>NGƯỜI BÁN HÀNG</b><span>(Ký và ghi rõ họ tên)</span><strong>{company.invoice_creator||""}</strong></div><div><b>KHÁCH HÀNG</b><span>(Ký và ghi rõ họ tên)</span></div></section>
       <footer className="a5-footer"><strong>Thank you!</strong><span>{company.invoice_footer||"Cảm ơn quý khách đã tin tưởng và ủng hộ!"}</span></footer>
     </article>}

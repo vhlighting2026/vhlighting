@@ -104,3 +104,67 @@
 .invoice-a5-v3{--a5-navy:#06244a;--a5-gold:#d99d25;width:148mm;min-height:210mm;margin:0 auto;background:#fff;color:#10223a;padding:7mm 7mm 0;box-shadow:0 18px 55px rgba(10,31,58,.18);font-family:'Be Vietnam Pro',Arial,sans-serif;position:relative;overflow:hidden}.a5-head{display:grid;grid-template-columns:1.16fr .84fr;gap:6mm;padding-bottom:4mm;border-bottom:1px solid var(--a5-gold)}.a5-brand{display:flex;gap:4mm}.a5-brand>img,.a5-logo{width:20mm;height:20mm;border-radius:3mm;object-fit:contain;flex:0 0 auto}.a5-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#082b59,#03152f);color:#f2b52f;font-size:21px;font-weight:900}.a5-logo span{font-size:5px;letter-spacing:.8px}.a5-brand h1{font-size:15px;line-height:1;margin:1mm 0 1.6mm;color:var(--a5-navy)}.a5-brand p{font-size:6.4px;line-height:1.45;margin:.6mm 0}.a5-brand .a5-tagline{font-size:6.7px;color:#c88b14;margin-bottom:2mm}.a5-title{text-align:center}.a5-title h2{font-size:15px;margin:2mm 0 4mm;color:var(--a5-navy);white-space:nowrap}.a5-title>div{border:1px solid #e6bd68;border-radius:2mm;padding:3mm;display:grid;grid-template-columns:1fr 1fr;gap:2mm;text-align:left;font-size:6.5px}.a5-title b{text-align:right}.a5-customer{border:1px solid #e6bd68;border-radius:2mm;margin:4mm 0;padding:3mm 4mm;display:grid;grid-template-columns:1fr 1fr;gap:2mm 5mm}.a5-customer p{display:grid;grid-template-columns:30mm 1fr;margin:0;font-size:6.8px}.a5-customer p:last-child{grid-column:1/-1}.a5-customer span{color:#596579}.a5-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #b9c5d3;border-radius:2mm;overflow:hidden}.a5-table th{background:var(--a5-navy);color:#fff;font-size:6.4px;padding:2.2mm 1.2mm}.a5-table td{font-size:6.4px;padding:2.5mm 1.2mm;border-top:1px solid #d8e0e8;border-right:1px solid #d8e0e8;text-align:center}.a5-table td:last-child{border-right:0;text-align:right;font-weight:700}.a5-table td:nth-child(2){text-align:left}.a5-table small{display:block;font-size:5.5px;color:#64748b;margin-top:.8mm}.a5-note-total{display:grid;grid-template-columns:1fr 1.05fr;gap:3mm;margin-top:3mm}.a5-note{border:1px solid #e3b052;border-radius:2mm;min-height:29mm;padding:3mm}.a5-note h3{font-size:7px;margin:0 0 2mm;color:var(--a5-navy)}.a5-note p{font-size:6.3px;line-height:1.55;white-space:pre-wrap;margin:0}.a5-total{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #b9c5d3;border-radius:2mm;overflow:hidden}.a5-total td{padding:2mm 3mm;font-size:6.5px;border-bottom:1px solid #d8e0e8}.a5-total td:last-child{text-align:right;font-weight:700}.a5-total tr:last-child td{border-bottom:0}.a5-total .a5-grand td{background:linear-gradient(100deg,#ffefbf,#f2bd54);font-size:8.2px;color:var(--a5-navy);font-weight:900}.a5-bank{border:1px solid #e3b052;border-radius:2mm;margin-top:4mm;padding:0 4mm 3mm}.a5-bank h3{width:max-content;margin:-2.5mm auto 2mm;background:#fff;padding:0 3mm;font-size:7.2px;color:var(--a5-navy)}.a5-bank-body{display:grid;grid-template-columns:30mm 1fr;gap:6mm;align-items:center}.a5-bank img,.a5-qr-empty{width:29mm;height:29mm;object-fit:contain}.a5-qr-empty{display:grid;place-items:center;border:1px dashed #bcc7d5;font-size:6px;color:#7a8798}.a5-bank-body p{display:grid;grid-template-columns:27mm 1fr;margin:1.6mm 0;font-size:6.7px}.a5-bank-body span{color:#526176}.a5-bank-body em{display:block;font-size:6px;margin-top:2mm;color:#9d6d0a}.a5-signatures{display:grid;grid-template-columns:1fr 1fr;gap:8mm;text-align:center;min-height:28mm;padding:4mm 6mm 1mm}.a5-signatures div{display:flex;flex-direction:column;align-items:center}.a5-signatures b{font-size:7px}.a5-signatures span{font-size:5.8px;font-style:italic;margin-top:1mm}.a5-signatures strong{font-size:7px;margin-top:auto}.a5-footer{height:18mm;margin:0 -7mm;background:var(--a5-navy);border-top:2.3mm solid var(--a5-gold);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;clip-path:polygon(0 22%,20% 0,48% 18%,75% 2%,100% 20%,100% 100%,0 100%);padding-top:3mm}.a5-footer strong{font-family:Georgia,serif;font-size:12px;font-style:italic;color:#f0bd48}.a5-footer span{font-size:5.7px;font-style:italic;margin-top:1mm}
 @media(max-width:900px){.sales-bottom-v3{grid-template-columns:1fr}.invoice-a5-v3{width:100%;min-height:auto;padding:18px}.a5-head{grid-template-columns:1fr}.a5-title{text-align:left}.a5-title h2{white-space:normal}.a5-note-total{grid-template-columns:1fr}.a5-bank-body{grid-template-columns:110px 1fr}.a5-bank img,.a5-qr-empty{width:105px;height:105px}}
 @media print{@page{size:A5 portrait;margin:0}html,body{width:148mm!important;min-width:148mm!important;background:#fff!important}.sidebar,.topbar,.invoice-actions,.invoice-edit-form,.notice,.content>*:not(.invoice-a5-v3){display:none!important}.app-shell,.main-area,.content{display:block!important;width:148mm!important;min-width:148mm!important;margin:0!important;padding:0!important}.invoice-a5-v3{display:block!important;width:148mm!important;height:210mm!important;min-height:210mm!important;margin:0!important;padding:7mm 7mm 0!important;box-shadow:none!important;page-break-after:avoid;break-after:avoid;overflow:hidden!important}.a5-table th,.a5-total .a5-grand td,.a5-logo,.a5-footer{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+
+/* ===== VH LIGHTING FINAL 3.0 — A5 PREMIUM INVOICE ===== */
+.invoice-a5-v3{
+  --a5-navy:#06264f;
+  --a5-navy-2:#031a38;
+  --a5-gold:#e4a62b;
+  --a5-gold-soft:#fff3cf;
+  width:148mm;
+  min-height:210mm;
+  padding:6mm 6.5mm 0;
+  background:#fff;
+  color:#0b2343;
+  border:1px solid #e4e9f0;
+  box-shadow:0 20px 60px rgba(3,26,56,.16);
+}
+.invoice-a5-v3 .a5-head{grid-template-columns:1.08fr .92fr;gap:5mm;padding-bottom:4mm}
+.invoice-a5-v3 .a5-brand{gap:4mm;align-items:flex-start}
+.invoice-a5-v3 .a5-brand>img,.invoice-a5-v3 .a5-logo{width:22mm;height:25mm;border-radius:0 0 2mm 2mm}
+.invoice-a5-v3 .a5-logo{font-size:23px;box-shadow:inset 0 -1.4mm 0 var(--a5-gold)}
+.invoice-a5-v3 .a5-logo span{font-size:5.5px}
+.invoice-a5-v3 .a5-brand h1{font-size:16px;margin:1mm 0 1.5mm;letter-spacing:.15px}
+.invoice-a5-v3 .a5-brand p{font-size:6.6px;line-height:1.48}
+.invoice-a5-v3 .a5-brand .a5-tagline{font-size:6.8px;font-weight:600}
+.invoice-a5-v3 .a5-title h2{font-size:15.5px;letter-spacing:.25px;margin:2mm 0 3.5mm}
+.invoice-a5-v3 .a5-title h2:after{content:"";display:block;width:38mm;height:.45mm;margin:2.2mm auto 0;background:linear-gradient(90deg,transparent,var(--a5-gold),transparent)}
+.invoice-a5-v3 .a5-title>div{border:1px solid #e4a62b;border-radius:3mm;padding:3.2mm;font-size:6.8px;gap:2.2mm;background:#fffdf8}
+.invoice-a5-v3 .a5-customer{margin:4mm 0 3.5mm;padding:3.2mm 4mm;border-radius:3mm;background:linear-gradient(90deg,#fff,#fffaf0)}
+.invoice-a5-v3 .a5-customer p{font-size:7px;grid-template-columns:29mm 1fr}
+.invoice-a5-v3 .a5-table{border-radius:2.5mm}
+.invoice-a5-v3 .a5-table th{font-size:6.8px;padding:2.4mm 1.3mm;letter-spacing:.15px}
+.invoice-a5-v3 .a5-table td{font-size:6.7px;padding:2.7mm 1.3mm}
+.invoice-a5-v3 .a5-table small{font-size:5.7px}
+.invoice-a5-v3 .a5-note-total{grid-template-columns:.95fr 1.05fr;gap:3mm;margin-top:3mm}
+.invoice-a5-v3 .a5-note{min-height:29mm;border-radius:2.5mm;padding:3.2mm;background:#fff}
+.invoice-a5-v3 .a5-note h3{font-size:7.4px;padding-left:2mm;border-left:1mm solid var(--a5-gold)}
+.invoice-a5-v3 .a5-note p{font-size:6.5px}
+.invoice-a5-v3 .a5-total{border-radius:2.5mm}
+.invoice-a5-v3 .a5-total td{font-size:6.8px;padding:2.1mm 3mm}
+.invoice-a5-v3 .a5-total .a5-grand td{font-size:8.4px;background:linear-gradient(100deg,#ffe7a2,#efb43a)}
+.invoice-a5-v3 .a5-bank{margin-top:4.5mm;padding:0 4.2mm 3.5mm;border:1.2px solid var(--a5-navy);border-radius:3mm;background:linear-gradient(135deg,#fff 0%,#fffdf6 100%)}
+.invoice-a5-v3 .a5-bank h3{margin:-3.4mm auto 2.2mm;padding:0;background:transparent;font-size:7.6px}
+.invoice-a5-v3 .a5-bank h3 span{display:block;background:var(--a5-navy);color:#fff;padding:1.8mm 8mm;border-radius:1.8mm;box-shadow:0 1mm 0 var(--a5-gold);letter-spacing:.2px}
+.invoice-a5-v3 .a5-bank-body{grid-template-columns:1fr 34mm;gap:5mm;align-items:center}
+.invoice-a5-v3 .a5-bank-info{min-width:0}
+.invoice-a5-v3 .a5-bank-name{font-size:11px;font-weight:900;color:#5b2c91;margin-bottom:2.2mm;letter-spacing:.15px}
+.invoice-a5-v3 .a5-bank-body p{grid-template-columns:31mm 1fr;align-items:center;margin:1.45mm 0;font-size:7px;padding-bottom:1.2mm;border-bottom:1px dashed #e4b04b}
+.invoice-a5-v3 .a5-bank-body p span{font-size:6.2px;color:#43546a;font-weight:700;letter-spacing:.25px}
+.invoice-a5-v3 .a5-bank-body p b{font-size:8.2px;color:var(--a5-navy);overflow-wrap:anywhere}
+.invoice-a5-v3 .a5-bank-body .a5-account-number{font-size:11px;letter-spacing:.5px}
+.invoice-a5-v3 .a5-bank-body em{font-size:6.8px;color:#c07c00;font-weight:700;margin-top:2mm}
+.invoice-a5-v3 .a5-qr-wrap{border:1px solid #efb43a;border-radius:2.5mm;padding:2mm;text-align:center;background:#fff}
+.invoice-a5-v3 .a5-bank img,.invoice-a5-v3 .a5-qr-empty{width:29mm;height:29mm}
+.invoice-a5-v3 .a5-qr-wrap strong{display:block;font-size:6.3px;color:#e63a2e;margin-top:.5mm}
+.invoice-a5-v3 .a5-signatures{min-height:25mm;padding:4mm 7mm 1mm}
+.invoice-a5-v3 .a5-signatures b{font-size:7.2px}
+.invoice-a5-v3 .a5-footer{height:16mm;margin:0 -6.5mm;border-top:1.8mm solid var(--a5-gold)}
+.invoice-a5-v3 .a5-footer strong{font-size:11px}
+
+@media print{
+  @page{size:A5 portrait;margin:0}
+  html,body{width:148mm!important;height:210mm!important;min-width:148mm!important;background:#fff!important}
+  .invoice-a5-v3{width:148mm!important;height:210mm!important;min-height:210mm!important;padding:6mm 6.5mm 0!important;border:0!important;box-shadow:none!important;overflow:hidden!important}
+  .invoice-a5-v3 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}

@@ -22,3 +22,13 @@ npm install
 npm run build
 npm run dev
 ```
+
+## Cập nhật mẫu hóa đơn A5 Premium
+
+- Khổ in cố định A5 dọc: 148 × 210 mm.
+- Thông tin chuyển khoản được phóng lớn, dễ đọc.
+- Số tài khoản được nhấn mạnh.
+- QR VietQR nằm riêng bên phải.
+- Ghi chú bên trái; không có nội dung thì để khung trắng.
+- Tạm tính, chiết khấu, phí vận chuyển và tổng thanh toán nằm bên phải.
+- Cuối hóa đơn có Người bán hàng và Khách hàng.

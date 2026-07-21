@@ -1,34 +1,73 @@
-# VH Lighting Sales — Final
+# VH Lighting Sales — Final 2.0 Full Setup
 
-Bản tích hợp cuối gồm Giai đoạn 1 + Giai đoạn 2 + hóa đơn A4 nâng cấp.
+Bản này dành cho **Supabase mới hoàn toàn**. Không cần chạy các file migration cũ.
 
-## Tính năng
-- Đăng nhập Supabase Auth
-- Dashboard phong cách phần mềm bán hàng hiện đại
-- Khách hàng, sản phẩm, kho, đơn hàng
-- Cho phép nhiều sản phẩm dùng chung mã SKU
-- Tìm sản phẩm theo mã hoặc tên khi tạo đơn
-- In phiếu bán hàng A4 kẻ ô, số tiền bằng chữ, thông tin ngân hàng/STK
-- Trang Cài đặt hóa đơn để nhập thông tin doanh nghiệp, ngân hàng, STK, logo, bảo hành
-- Responsive desktop/tablet/mobile
+## Cài database mới
 
-## Triển khai
-1. Tạo project Supabase.
-2. Chạy `supabase/schema.sql` trong SQL Editor cho project mới.
-3. Với database cũ, chạy thêm:
-   - `supabase/migration_allow_duplicate_sku.sql`
-   - `supabase/migration_company_invoice_settings.sql`
-4. Tạo user tại Supabase Authentication.
-5. Upload toàn bộ nội dung thư mục này lên root repository GitHub.
-6. Import repository vào Vercel.
-7. Thêm biến môi trường:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-8. Deploy.
+1. Tạo một project Supabase mới.
+2. Mở **SQL Editor**.
+3. Mở file `supabase/FULL_SETUP_NEW_SYSTEM.sql` trong bộ code.
+4. Sao chép toàn bộ nội dung và bấm **Run** đúng một lần.
+5. Vào **Authentication → Users** để tạo tài khoản đăng nhập.
 
-## Kiểm tra build
-Bản này đã chạy thành công `next build` với Next.js 15.5.20 và TypeScript.
+File SQL tổng hợp tạo đầy đủ:
+
+- `customers`
+- `products`
+- `orders`
+- `order_items`
+- `company_settings`
+- Quan hệ khóa ngoại
+- Chỉ mục tìm kiếm
+- Row Level Security và policy cho tài khoản đã đăng nhập
+- Các cột thuộc tính ánh sáng, phí vận chuyển, QR/VietQR, chữ ký, người lập phiếu và nội dung chuyển khoản
+- Thông tin mặc định VH Lighting
+
+SQL **không tạo sẵn** khách hàng, sản phẩm hoặc dòng hóa đơn demo. Khi bán bao nhiêu sản phẩm, hệ thống chỉ tạo đúng bấy nhiêu dòng chi tiết.
+
+## Cấu hình website
+
+Tạo file `.env.local` hoặc khai báo trên Vercel:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+```
+
+Sau đó:
+
+```bash
+npm install
+npm run build
+npm run dev
+```
+
+Hoặc tải code lên GitHub, kết nối Vercel và thêm hai biến môi trường trên.
+
+## Cài đặt thông tin hóa đơn
+
+Sau khi đăng nhập, vào **Cài đặt hóa đơn** để sửa:
+
+- Tên công ty và thông tin liên hệ
+- Logo
+- Người lập phiếu
+- Ảnh chữ ký
+- Ngân hàng, mã VietQR, số tài khoản, chủ tài khoản
+- Nội dung chuyển khoản mặc định
+- Chính sách bảo hành và lời cảm ơn
+
+Nội dung chuyển khoản vẫn có thể sửa riêng ở từng đơn hàng trước khi lưu hoặc in.
+
+## Project thử nghiệm cũ
+
+`supabase/RESET_EMPTY_SYSTEM.sql` là file tùy chọn để xóa toàn bộ bảng nghiệp vụ. Không chạy file này trên hệ thống có dữ liệu cần giữ.
+
+Các file `migration_*.sql` chỉ dành cho nâng cấp database cũ; với project mới, bỏ qua toàn bộ và chỉ chạy `FULL_SETUP_NEW_SYSTEM.sql`.
 
 
-## Cập nhật phí vận chuyển và VietQR
-Nếu database đã tồn tại, chạy thêm file `supabase/migration_shipping_fee_vietqr.sql` trong Supabase SQL Editor. Sau đó vào **Cài đặt hóa đơn** và nhập mã ngân hàng VietQR (ví dụ `VCB` hoặc mã BIN), số tài khoản và chủ tài khoản.
+## Hai quy tắc nội dung chuyển khoản
+
+1. **Theo đơn hàng:** QR chứa số tiền và nội dung chuyển khoản của đơn.
+2. **Khách hàng tự nhập:** QR chỉ chứa tài khoản và số tiền; nội dung chuyển khoản để khách tự nhập.
+
+Cấu hình tại **Cài đặt hóa đơn → Quy tắc nội dung chuyển khoản**.

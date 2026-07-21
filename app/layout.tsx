@@ -1,0 +1,1 @@
+import "./globals.css"; export const metadata={title:"VH Lighting Sales",description:"Quản lý bán hàng VH Lighting"}; export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="vi"><body>{children}</body></html>}

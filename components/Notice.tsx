@@ -1,0 +1,1 @@
+"use client"; export default function Notice({text,type='ok'}:{text:string;type?:'ok'|'error'}){return text?<div className={'notice '+type}>{text}</div>:null}

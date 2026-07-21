@@ -186,3 +186,26 @@
 .order-toast{position:fixed;right:24px;bottom:24px;z-index:1200;width:min(390px,calc(100vw - 32px));display:grid;grid-template-columns:38px 1fr 30px;align-items:center;gap:10px;padding:14px 14px;border-radius:12px;background:#fff;box-shadow:0 16px 45px rgba(10,31,55,.2);border:1px solid #dce4ed;animation:modalEnter .2s ease}.order-toast>span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900}.order-toast.success>span{background:#dcf7e8;color:#0c8a4c}.order-toast.error>span{background:#ffeded;color:#c83232}.order-toast b{font-size:12px;color:var(--navy)}.order-toast p{margin:3px 0 0;font-size:11px;color:#687587;line-height:1.45}.order-toast button{border:0;background:transparent;color:#687587;display:grid;place-items:center}
 @media(max-width:900px){.order-row-actions span{display:none}.order-action-button{width:36px;padding:0}.orders-table-v3 th:last-child,.orders-table-v3 td:last-child{min-width:145px}}
 @media(max-width:600px){.delete-modal-actions{display:grid;grid-template-columns:1fr}.delete-modal-actions button{width:100%;justify-content:center}.order-toast{right:16px;bottom:16px}}
+
+/* Final 3.1 - Product Excel import/export */
+.product-workspace-v31{align-items:start}
+.panel-heading p{margin:4px 0 0;color:#6b7a90;font-size:13px}
+.product-heading-v31{align-items:flex-start;gap:20px}
+.product-toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.compact-btn{min-height:38px;padding:0 13px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.excel-dropzone{margin:14px 0;border:1.5px dashed #b8c7da;border-radius:12px;padding:15px 18px;display:flex;gap:13px;align-items:center;color:#17365d;background:#f8fbff;cursor:pointer;transition:.2s ease}
+.excel-dropzone:hover,.excel-dropzone.is-dragging{border-color:#1769aa;background:#eef7ff;transform:translateY(-1px)}
+.excel-dropzone div{display:flex;flex-direction:column;gap:3px}.excel-dropzone span{font-size:12px;color:#6d7c91}
+.bulk-toolbar{margin:0 0 12px;padding:10px 13px;border-radius:10px;background:#eef6ff;border:1px solid #cfe3fa;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#0b4f88}
+.bulk-toolbar>div{display:flex;gap:8px}.danger-outline{background:#fff;color:#d92d20;border:1px solid #f0a6a0;border-radius:8px;font-weight:700}.danger-outline:hover{background:#fff4f3}
+.check-column{width:42px;text-align:center!important}.check-button{border:0;background:transparent;color:#4373a5;padding:4px;cursor:pointer;display:inline-flex}.selected-row{background:#f3f8ff!important}
+.product-footer-v31{display:flex;justify-content:space-between;align-items:center;gap:12px}.product-footer-v31>div{display:flex;gap:12px}.link-button{border:0;background:transparent;color:#075fa9;display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-weight:650}
+.icon-close{border:0;background:#f3f6fa;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;color:#41546c}
+.modal-backdrop{position:fixed;inset:0;background:rgba(3,18,39,.48);z-index:1000;display:grid;place-items:center;padding:20px;backdrop-filter:blur(3px)}
+.modal-card{width:min(720px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(3,18,39,.28);padding:20px}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}.modal-header h3{margin:0;color:#082c53;font-size:20px}.modal-header p{margin:4px 0 0;color:#76859a;font-size:13px}
+.import-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.import-summary>div{border:1px solid #dce6f2;border-radius:12px;padding:13px;background:#f8fbff;display:flex;flex-direction:column}.import-summary b{font-size:23px;color:#075fa9}.import-summary span{font-size:12px;color:#6b7a90}
+.import-preview-table{border:1px solid #dce5ef;border-radius:12px;overflow:auto}.import-preview-table table{width:100%;border-collapse:collapse;font-size:13px}.import-preview-table th{background:#082f59;color:#fff;text-align:left;padding:10px}.import-preview-table td{padding:9px 10px;border-bottom:1px solid #e4eaf1}.import-more{padding:8px 10px;margin:0;color:#68778b;font-size:12px}
+.modal-note{margin-top:14px;padding:12px;border-radius:10px;background:#fff8e7;border:1px solid #efd695;color:#6e5414;font-size:13px;line-height:1.45}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.bulk-modal{width:min(480px,100%)}.bulk-modal label{display:flex;flex-direction:column;gap:7px;margin:14px 0;color:#21344d;font-weight:700}.bulk-modal label span{font-size:12px;color:#7b899d;font-weight:400}.bulk-modal input{height:42px;border:1px solid #cfd9e6;border-radius:9px;padding:0 12px;font-size:14px}
+@media(max-width:900px){.product-heading-v31{flex-direction:column}.product-toolbar{justify-content:flex-start}.bulk-toolbar{align-items:flex-start;flex-direction:column}.product-footer-v31{align-items:flex-start;flex-direction:column}.excel-dropzone{align-items:flex-start}.compact-products{min-width:900px}}

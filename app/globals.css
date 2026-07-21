@@ -168,3 +168,21 @@
   .invoice-a5-v3{width:148mm!important;height:210mm!important;min-height:210mm!important;padding:6mm 6.5mm 0!important;border:0!important;box-shadow:none!important;overflow:hidden!important}
   .invoice-a5-v3 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
+
+/* Final 3.0 - order deletion controls */
+.orders-table-v3 th:last-child,.orders-table-v3 td:last-child{min-width:245px}
+.order-row-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;white-space:nowrap}
+.order-action-button{height:36px;padding:0 12px;border:1px solid #d8e1eb;border-radius:9px;background:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:12px;font-weight:700;transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.order-action-button:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(13,43,75,.08)}
+.order-action-button.view{color:#173b64}.order-action-button.view:hover{background:#f4f8fc;border-color:#b8c9da}
+.order-action-button.print{color:#075ed1}.order-action-button.print:hover{background:#f2f7ff;border-color:#a9c9f5}
+.order-action-button.delete{color:#d72e2e;border-color:#ffc7c7}.order-action-button.delete:hover{background:#fff1f1;border-color:#f48b8b}
+.delete-order-modal{padding:24px;overflow:visible}
+.delete-modal-close{position:absolute;right:16px;top:16px;width:34px;height:34px;border:0;border-radius:9px;background:transparent;color:#66758a;display:grid;place-items:center}.delete-modal-close:hover{background:#f1f4f8}
+.delete-modal-icon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#fff1dc;color:#d88900;margin-bottom:14px}
+.delete-modal-content h3{margin:0 38px 8px 0;color:var(--navy);font-size:18px}.delete-modal-content p{margin:0;color:#5c6878;font-size:13px;line-height:1.6}.delete-modal-content strong{display:block;margin-top:9px;color:#d12b2b;font-size:12px}
+.delete-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:17px;border-top:1px solid #edf0f4}
+.danger-button{border:0;border-radius:9px;padding:11px 16px;background:#df2525;color:#fff;font-weight:800;transition:.16s}.danger-button:hover:not(:disabled){background:#c91d1d;transform:translateY(-1px)}.danger-button:disabled,.delete-modal-close:disabled{opacity:.6;cursor:not-allowed}
+.order-toast{position:fixed;right:24px;bottom:24px;z-index:1200;width:min(390px,calc(100vw - 32px));display:grid;grid-template-columns:38px 1fr 30px;align-items:center;gap:10px;padding:14px 14px;border-radius:12px;background:#fff;box-shadow:0 16px 45px rgba(10,31,55,.2);border:1px solid #dce4ed;animation:modalEnter .2s ease}.order-toast>span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900}.order-toast.success>span{background:#dcf7e8;color:#0c8a4c}.order-toast.error>span{background:#ffeded;color:#c83232}.order-toast b{font-size:12px;color:var(--navy)}.order-toast p{margin:3px 0 0;font-size:11px;color:#687587;line-height:1.45}.order-toast button{border:0;background:transparent;color:#687587;display:grid;place-items:center}
+@media(max-width:900px){.order-row-actions span{display:none}.order-action-button{width:36px;padding:0}.orders-table-v3 th:last-child,.orders-table-v3 td:last-child{min-width:145px}}
+@media(max-width:600px){.delete-modal-actions{display:grid;grid-template-columns:1fr}.delete-modal-actions button{width:100%;justify-content:center}.order-toast{right:16px;bottom:16px}}

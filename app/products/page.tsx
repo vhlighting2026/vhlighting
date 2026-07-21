@@ -6,7 +6,6 @@ import AppShell from "@/components/AppShell";
 import Notice from "@/components/Notice";
 import {supabase} from "@/lib/supabase";
 import type {Product} from "@/lib/types";
-import * as XLSX from "xlsx";
 import {
   CheckSquare,Download,FileDown,FileSpreadsheet,FileUp,
   Pencil,RefreshCw,Search,Square,Trash2,Upload,X
@@ -43,8 +42,31 @@ function getCell(row:Record<string,unknown>, keys:string[]){
   return undefined;
 }
 
-function parseImportRows(sheet:XLSX.WorkSheet){
-  const raw=XLSX.utils.sheet_to_json<Record<string,unknown>>(sheet,{defval:''});
+function parseCsvText(text:string){
+  const source=text.replace(/^\uFEFF/,'');
+  const firstLine=source.split(/\r?\n/,1)[0]||'';
+  const counts={',':(firstLine.match(/,/g)||[]).length,';':(firstLine.match(/;/g)||[]).length,'\t':(firstLine.match(/\t/g)||[]).length};
+  const delimiter=(Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||',');
+  const records:string[][]=[];
+  let row:string[]=[],cell='',quoted=false;
+  for(let i=0;i<source.length;i++){
+    const ch=source[i];
+    if(ch==='"'){
+      if(quoted&&source[i+1]==='"'){cell+='"';i++;}
+      else quoted=!quoted;
+    }else if(ch===delimiter&&!quoted){row.push(cell);cell='';}
+    else if((ch==='\n'||ch==='\r')&&!quoted){
+      if(ch==='\r'&&source[i+1]==='\n')i++;
+      row.push(cell);cell='';
+      if(row.some(value=>value.trim()!==''))records.push(row);
+      row=[];
+    }else cell+=ch;
+  }
+  row.push(cell);
+  if(row.some(value=>value.trim()!==''))records.push(row);
+  if(records.length<2)return {rows:[] as ImportRow[],invalid:0};
+  const headers=records[0].map(normalize);
+  const raw=records.slice(1).map(values=>Object.fromEntries(headers.map((header,index)=>[header,values[index]??''])));
   let invalid=0;
   const rows:ImportRow[]=[];
   raw.forEach(row=>{
@@ -58,6 +80,16 @@ function parseImportRows(sheet:XLSX.WorkSheet){
     rows.push({sku,name,unit,light_attribute,price,stock});
   });
   return {rows,invalid};
+}
+
+function csvEscape(value:unknown){
+  const text=String(value??'');
+  return /[",\r\n]/.test(text)?`"${text.replace(/"/g,'""')}"`:text;
+}
+
+function rowsToCsv(rows:Record<string,unknown>[]){
+  const headers=['sku','name','unit','light_attribute','price','stock'];
+  return '\uFEFF'+[headers.join(','),...rows.map(row=>headers.map(header=>csvEscape(row[header])).join(','))].join('\r\n');
 }
 
 function downloadBlob(content:BlobPart,fileName:string,type:string){
@@ -170,15 +202,11 @@ export default function Page(){
    }
  }
 
- function exportExcel(){
+ function exportCsv(){
    const rows=data.map(x=>({
      sku:x.sku,name:x.name,unit:x.unit,light_attribute:x.light_attribute||'',price:Number(x.price),stock:Number(x.stock)
    }));
-   const workbook=XLSX.utils.book_new();
-   const sheet=XLSX.utils.json_to_sheet(rows,{header:['sku','name','unit','light_attribute','price','stock']});
-   sheet['!cols']=[{wch:18},{wch:34},{wch:12},{wch:18},{wch:14},{wch:12}];
-   XLSX.utils.book_append_sheet(workbook,sheet,'products');
-   XLSX.writeFile(workbook,`vh-lighting-products-${new Date().toISOString().slice(0,10)}.xlsx`);
+   downloadBlob(rowsToCsv(rows),`vh-lighting-products-${new Date().toISOString().slice(0,10)}.csv`,'text/csv;charset=utf-8');
  }
 
  function downloadTemplate(){
@@ -187,23 +215,16 @@ export default function Page(){
      {sku:'VH-AT12W',name:'Đèn âm trần 12W',unit:'Cái',light_attribute:'Vàng',price:55000,stock:100},
      {sku:'VH-DL20W',name:'Đèn downlight 20W',unit:'Cái',light_attribute:'Trung tính',price:120000,stock:50}
    ];
-   const workbook=XLSX.utils.book_new();
-   const sheet=XLSX.utils.json_to_sheet(sample);
-   sheet['!cols']=[{wch:18},{wch:34},{wch:12},{wch:18},{wch:14},{wch:12}];
-   XLSX.utils.book_append_sheet(workbook,sheet,'products');
-   XLSX.writeFile(workbook,'mau-nhap-san-pham-vh-lighting.xlsx');
+   downloadBlob(rowsToCsv(sample),'mau-nhap-san-pham-vh-lighting.csv','text/csv;charset=utf-8');
  }
 
  async function readImportFile(file:File){
-   if(!/\.(xlsx|xls|csv)$/i.test(file.name)){toast('Chỉ hỗ trợ file Excel hoặc CSV',true);return}
+   if(!/\.csv$/i.test(file.name)){toast('Chỉ hỗ trợ file CSV UTF-8',true);return}
    try{
-     const buffer=await file.arrayBuffer();
-     const workbook=XLSX.read(buffer,{type:'array'});
-     const sheet=workbook.Sheets[workbook.SheetNames[0]];
-     const parsed=parseImportRows(sheet);
-     if(!parsed.rows.length){toast('Không tìm thấy dòng sản phẩm hợp lệ trong file',true);return}
+     const parsed=parseCsvText(await file.text());
+     if(!parsed.rows.length){toast('Không tìm thấy dòng sản phẩm hợp lệ trong file CSV',true);return}
      setImportPreview({...parsed,fileName:file.name});setShowImport(true);setFileDrag(false);
-   }catch(err){toast(err instanceof Error?err.message:'Không đọc được file',true)}
+   }catch(err){toast(err instanceof Error?err.message:'Không đọc được file CSV',true)}
  }
 
  async function importProducts(){
@@ -255,14 +276,14 @@ export default function Page(){
    <div className="panel-heading product-heading-v31"><div><h2>Danh sách sản phẩm</h2><p>{data.length.toLocaleString('vi-VN')} sản phẩm trong hệ thống</p></div>
     <div className="product-toolbar">
       <button type="button" className="secondary compact-btn" onClick={downloadTemplate}><FileDown size={16}/> File mẫu</button>
-      <button type="button" className="secondary compact-btn" onClick={exportExcel}><Download size={16}/> Xuất Excel</button>
-      <button type="button" className="primary compact-btn" onClick={()=>fileInput.current?.click()}><Upload size={16}/> Nhập Excel</button>
-      <input ref={fileInput} hidden type="file" accept=".xlsx,.xls,.csv" onChange={e=>{const f=e.target.files?.[0];if(f)readImportFile(f);e.target.value=''}}/>
+      <button type="button" className="secondary compact-btn" onClick={exportCsv}><Download size={16}/> Xuất CSV</button>
+      <button type="button" className="primary compact-btn" onClick={()=>fileInput.current?.click()}><Upload size={16}/> Nhập CSV</button>
+      <input ref={fileInput} hidden type="file" accept=".csv" onChange={e=>{const f=e.target.files?.[0];if(f)readImportFile(f);e.target.value=''}}/>
     </div>
    </div>
 
    <div className={`excel-dropzone ${fileDrag?'is-dragging':''}`} onDragOver={e=>{e.preventDefault();setFileDrag(true)}} onDragLeave={()=>setFileDrag(false)} onDrop={e=>{e.preventDefault();setFileDrag(false);const f=e.dataTransfer.files?.[0];if(f)readImportFile(f)}} onClick={()=>fileInput.current?.click()}>
-     <FileSpreadsheet size={26}/><div><b>Kéo file Excel vào đây để nhập nhanh</b><span>Hỗ trợ XLSX, XLS và CSV — tự cập nhật sản phẩm trùng mã + tên + ánh sáng.</span></div>
+     <FileSpreadsheet size={26}/><div><b>Kéo file CSV vào đây để nhập nhanh</b><span>Hỗ trợ CSV UTF-8 — tự cập nhật sản phẩm trùng mã + tên + ánh sáng.</span></div>
    </div>
 
    <div className="product-filter-row"><div className="search-field"><Search size={17}/><input placeholder="Tìm theo mã hoặc tên sản phẩm..." value={query} onChange={e=>setQuery(e.target.value)}/></div><select value={attribute} onChange={e=>setAttribute(e.target.value)}><option value="all">Tất cả thuộc tính</option><option>Trắng</option><option>Vàng</option><option>Trung tính</option><option>Ba màu</option><option>Không áp dụng</option></select></div>
@@ -274,7 +295,7 @@ export default function Page(){
   </section>
  </div>
 
- {showImport&&importPreview&&<div className="modal-backdrop"><div className="modal-card import-modal"><div className="modal-header"><div><h3>Nhập sản phẩm từ Excel</h3><p>{importPreview.fileName}</p></div><button type="button" className="icon-close" onClick={()=>{setShowImport(false);setImportPreview(null)}}><X size={20}/></button></div><div className="import-summary"><div><b>{importPreview.rows.length}</b><span>Dòng hợp lệ</span></div><div><b>{importPreview.invalid}</b><span>Dòng bỏ qua</span></div></div><div className="import-preview-table"><table><thead><tr><th>SKU</th><th>Tên sản phẩm</th><th>Ánh sáng</th><th>Giá</th><th>Tồn</th></tr></thead><tbody>{importPreview.rows.slice(0,8).map((x,i)=><tr key={`${x.sku}-${i}`}><td>{x.sku}</td><td>{x.name}</td><td>{x.light_attribute}</td><td>{x.price.toLocaleString('vi-VN')}</td><td>{x.stock}</td></tr>)}</tbody></table>{importPreview.rows.length>8&&<p className="import-more">Và {importPreview.rows.length-8} dòng khác…</p>}</div><div className="modal-note">Sản phẩm trùng <b>mã + tên + ánh sáng</b> sẽ được cập nhật giá và tồn kho. Sản phẩm mới sẽ được thêm vào.</div><div className="modal-actions"><button type="button" className="secondary" onClick={()=>{setShowImport(false);setImportPreview(null)}}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={importProducts}>{busy?'Đang nhập…':`Nhập ${importPreview.rows.length} sản phẩm`}</button></div></div></div>}
+ {showImport&&importPreview&&<div className="modal-backdrop"><div className="modal-card import-modal"><div className="modal-header"><div><h3>Nhập sản phẩm từ CSV</h3><p>{importPreview.fileName}</p></div><button type="button" className="icon-close" onClick={()=>{setShowImport(false);setImportPreview(null)}}><X size={20}/></button></div><div className="import-summary"><div><b>{importPreview.rows.length}</b><span>Dòng hợp lệ</span></div><div><b>{importPreview.invalid}</b><span>Dòng bỏ qua</span></div></div><div className="import-preview-table"><table><thead><tr><th>SKU</th><th>Tên sản phẩm</th><th>Ánh sáng</th><th>Giá</th><th>Tồn</th></tr></thead><tbody>{importPreview.rows.slice(0,8).map((x,i)=><tr key={`${x.sku}-${i}`}><td>{x.sku}</td><td>{x.name}</td><td>{x.light_attribute}</td><td>{x.price.toLocaleString('vi-VN')}</td><td>{x.stock}</td></tr>)}</tbody></table>{importPreview.rows.length>8&&<p className="import-more">Và {importPreview.rows.length-8} dòng khác…</p>}</div><div className="modal-note">Sản phẩm trùng <b>mã + tên + ánh sáng</b> sẽ được cập nhật giá và tồn kho. Sản phẩm mới sẽ được thêm vào.</div><div className="modal-actions"><button type="button" className="secondary" onClick={()=>{setShowImport(false);setImportPreview(null)}}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={importProducts}>{busy?'Đang nhập…':`Nhập ${importPreview.rows.length} sản phẩm`}</button></div></div></div>}
 
  {showBulk&&<div className="modal-backdrop"><div className="modal-card bulk-modal"><div className="modal-header"><div><h3>Cập nhật hàng loạt</h3><p>Áp dụng cho {selectedProducts.length} sản phẩm đã chọn</p></div><button type="button" className="icon-close" onClick={()=>setShowBulk(false)}><X size={20}/></button></div><label>Giá bán mới <span>(bỏ trống để giữ nguyên)</span><input type="number" min="0" value={bulkPrice} onChange={e=>setBulkPrice(e.target.value)} placeholder="Ví dụ: 120000"/></label><label>Tồn kho mới <span>(bỏ trống để giữ nguyên)</span><input type="number" min="0" value={bulkStock} onChange={e=>setBulkStock(e.target.value)} placeholder="Ví dụ: 100"/></label><div className="modal-actions"><button type="button" className="secondary" onClick={()=>setShowBulk(false)}>Hủy</button><button type="button" className="primary" disabled={busy} onClick={applyBulkUpdate}>{busy?'Đang cập nhật…':'Cập nhật sản phẩm'}</button></div></div></div>}
  </AppShell></AuthGuard>

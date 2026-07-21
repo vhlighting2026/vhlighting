@@ -2,17 +2,17 @@
 
 ## Nâng cấp quản lý sản phẩm
 
-- Nhập sản phẩm hàng loạt từ XLSX, XLS hoặc CSV ngay trên website.
-- Kéo thả file Excel vào khu vực nhập nhanh.
-- Tải file Excel mẫu đúng cấu trúc bảng `products`.
-- Xuất toàn bộ danh sách sản phẩm ra Excel.
+- Nhập sản phẩm hàng loạt từ CSV UTF-8 ngay trên website.
+- Kéo thả file CSV vào khu vực nhập nhanh.
+- Tải file CSV mẫu đúng cấu trúc bảng `products`.
+- Xuất toàn bộ danh sách sản phẩm ra CSV.
 - Sản phẩm trùng `sku + name + light_attribute` được cập nhật giá và tồn kho.
 - Chọn nhiều sản phẩm để cập nhật giá/tồn kho hàng loạt.
 - Xóa nhiều sản phẩm cùng lúc.
 - Sao lưu sản phẩm ra JSON và khôi phục từ JSON.
 - Sửa sản phẩm trực tiếp từ danh sách.
 
-## Cột Excel hỗ trợ
+## Cột CSV hỗ trợ
 
 ```text
 sku,name,unit,light_attribute,price,stock

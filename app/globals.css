@@ -187,7 +187,7 @@
 @media(max-width:900px){.order-row-actions span{display:none}.order-action-button{width:36px;padding:0}.orders-table-v3 th:last-child,.orders-table-v3 td:last-child{min-width:145px}}
 @media(max-width:600px){.delete-modal-actions{display:grid;grid-template-columns:1fr}.delete-modal-actions button{width:100%;justify-content:center}.order-toast{right:16px;bottom:16px}}
 
-/* Final 3.1 - Product Excel import/export */
+/* Final 3.1 Stable - Product CSV import/export */
 .product-workspace-v31{align-items:start}
 .panel-heading p{margin:4px 0 0;color:#6b7a90;font-size:13px}
 .product-heading-v31{align-items:flex-start;gap:20px}

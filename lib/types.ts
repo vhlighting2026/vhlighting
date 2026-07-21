@@ -3,7 +3,7 @@ export type Product={id:string;sku:string;name:string;unit:string;light_attribut
 export type Order={
   id:string;order_no:string;customer_id:string|null;customer_name:string;customer_phone:string|null;
   customer_address:string|null;subtotal:number;discount:number;shipping_fee:number;total:number;
-  status:string;note:string|null;created_at:string
+  status:string;note:string|null;payment_method:string|null;transfer_mode:string|null;transfer_content:string|null;created_at:string
 };
 export type OrderItem={id?:string;order_id?:string;product_id:string|null;sku:string;product_name:string;unit:string;light_attribute:string|null;quantity:number;unit_price:number;line_total:number};
 export type CompanySettings={

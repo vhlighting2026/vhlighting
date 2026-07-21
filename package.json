@@ -1,6 +1,6 @@
 {
-  "name": "vh-lighting-final-2",
-  "version": "1.0.0",
+  "name": "vh-lighting-final-3",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

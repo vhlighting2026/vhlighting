@@ -28,7 +28,7 @@ export default function Page(){
     if(error)setError(error.message);else setNotice("Đã lưu thông tin công ty và tài khoản ngân hàng.");setSaving(false);
   }
   return <AuthGuard><AppShell title="Cài đặt hóa đơn"><form className="panel form-card settings-form" onSubmit={save}>
-    <div className="panel-heading"><div><h2>Thông tin doanh nghiệp</h2><p>Dữ liệu này sẽ hiển thị trên phiếu bán hàng A4.</p></div><button className="primary" disabled={saving}>{saving?"Đang lưu…":"Lưu cài đặt"}</button></div>
+    <div className="panel-heading"><div><h2>Thông tin doanh nghiệp</h2><p>Dữ liệu này sẽ hiển thị trên hóa đơn bán hàng A5 dọc.</p></div><button className="primary" disabled={saving}>{saving?"Đang lưu…":"Lưu cài đặt"}</button></div>
     {notice&&<Notice text={notice}/>} {error&&<Notice text={error} type="error"/>}
     <div className="settings-section"><h3>Nhận diện và liên hệ</h3><div className="form-grid">
       <label>Tên đơn vị<input value={form.company_name} onChange={e=>set("company_name",e.target.value)} required/></label>

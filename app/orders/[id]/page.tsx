@@ -52,7 +52,7 @@ export default function Page() {
     if(!order || !company.bank_id || !company.bank_account) return "";
     const bank=encodeURIComponent(company.bank_id.trim());
     const account=encodeURIComponent(company.bank_account.replace(/\s+/g,""));
-    const params=new URLSearchParams({amount:String(Math.max(0,Math.round(Number(order.total||0)))),addInfo:"THANH TOAN DON HANG",accountName:(company.bank_holder||"").slice(0,50)});
+    const params=new URLSearchParams({amount:String(Math.max(0,Math.round(Number(order.total||0)))),addInfo:`THANH TOAN DON HANG ${order.order_no.replace(/\W/g, "")}`,accountName:(company.bank_holder||"").slice(0,50)});
     return `https://img.vietqr.io/image/${bank}-${account}-compact2.png?${params.toString()}`;
   },[company.bank_id,company.bank_account,company.bank_holder,order]);
 
@@ -77,8 +77,8 @@ export default function Page() {
         <table className="invoice-total-table invoice-total-table-new"><tbody><tr><td>Tạm tính</td><td>{money(order.subtotal)} ₫</td></tr><tr><td>Chiết khấu</td><td>- {money(order.discount)} ₫</td></tr><tr><td>Phí vận chuyển</td><td>+ {money(order.shipping_fee||0)} ₫</td></tr><tr className="grand-total"><td>TỔNG THANH TOÁN</td><td>{money(order.total)} ₫</td></tr></tbody></table>
       </section>
 
-      <section className="invoice-note-new"><b>Ghi chú đơn hàng</b><p>{order.note||"Không có ghi chú."}</p></section>
-      <section className="sign sign-new"><div><b>Người lập phiếu</b><strong>{company.invoice_creator||"Vũ Lighting"}</strong><span>(Ký và ghi rõ họ tên)</span></div><div><b>Khách hàng</b><span>(Ký và ghi rõ họ tên)</span></div></section>
+      <section className="invoice-transfer-new"><b>Nội dung chuyển khoản</b><p>THANH TOAN DON HANG {order.order_no.replace(/\W/g, "")}</p></section><section className="invoice-note-new"><b>Ghi chú đơn hàng</b><p>{order.note||"Không có ghi chú."}</p></section>
+      <section className="sign sign-new"><div><b>Người lập phiếu</b><strong>{company.invoice_creator||"Vũ Lighting"}</strong><span>(Ký và ghi rõ họ tên)</span></div><div><b>Khách hàng</b><span>(Ký và ghi rõ họ tên)</span></div></section><footer className="invoice-decor-footer"><div className="gold-wave"/><p>— &nbsp; Cảm ơn quý khách đã tin tưởng và ủng hộ! &nbsp; —</p></footer>
     </article>}
   </AppShell></AuthGuard>;
 }

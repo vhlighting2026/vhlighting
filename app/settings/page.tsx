@@ -10,10 +10,9 @@ const defaults: CompanySettings = {
   id: 1, company_name: "VH LIGHTING", tagline: "Chuyên cung cấp thiết bị chiếu sáng",
   address: "", hotline: "0877 933 362", website: "vulighting.com",
   email: "vat.vuhoanglighting@gmail.com", tax_code: "", bank_name: "", bank_id: "",
-  bank_account: "", bank_holder: "", bank_branch: "", logo_url: "", signature_url: "", transfer_content_mode: "order", transfer_content_default: "THANH TOAN HD",
+  bank_account: "", bank_holder: "", bank_branch: "", logo_url: "",
   warranty_note: "Sản phẩm được bảo hành theo chính sách của nhà sản xuất. Vui lòng giữ phiếu bán hàng để được hỗ trợ.",
-  invoice_footer: "Cảm ơn Quý khách đã tin tưởng và lựa chọn VH Lighting.",
-  invoice_creator: "Vũ Lighting"
+  invoice_footer: "Cảm ơn Quý khách đã tin tưởng và lựa chọn VH Lighting."
 };
 
 export default function Page(){
@@ -38,7 +37,7 @@ export default function Page(){
       <label>Hotline<input value={form.hotline||""} onChange={e=>set("hotline",e.target.value)}/></label>
       <label>Website<input value={form.website||""} onChange={e=>set("website",e.target.value)}/></label>
       <label>Email<input value={form.email||""} onChange={e=>set("email",e.target.value)}/></label>
-      <label>Người lập phiếu<input value={form.invoice_creator||""} onChange={e=>set("invoice_creator",e.target.value)} placeholder="Vũ Lighting"/></label><label>Link logo (tùy chọn)<input value={form.logo_url||""} onChange={e=>set("logo_url",e.target.value)} placeholder="https://.../logo.png"/></label><label className="span-2">Link ảnh chữ ký người lập phiếu<input value={form.signature_url||""} onChange={e=>set("signature_url",e.target.value)} placeholder="https://.../chu-ky.png"/><small>Nên dùng ảnh PNG nền trong suốt.</small></label>
+      <label>Link logo (tùy chọn)<input value={form.logo_url||""} onChange={e=>set("logo_url",e.target.value)} placeholder="https://.../logo.png"/></label>
     </div></div>
     <div className="settings-section"><h3>Tài khoản nhận thanh toán</h3><div className="form-grid">
       <label>Ngân hàng<input value={form.bank_name||""} onChange={e=>set("bank_name",e.target.value)} placeholder="VD: Vietcombank"/></label>
@@ -46,8 +45,6 @@ export default function Page(){
       <label>Số tài khoản<input value={form.bank_account||""} onChange={e=>set("bank_account",e.target.value)} placeholder="Nhập STK công ty"/></label>
       <label>Chủ tài khoản<input value={form.bank_holder||""} onChange={e=>set("bank_holder",e.target.value)} placeholder="Tên công ty/chủ tài khoản"/></label>
       <label>Chi nhánh<input value={form.bank_branch||""} onChange={e=>set("bank_branch",e.target.value)}/></label>
-      <label className="span-2">Quy tắc nội dung chuyển khoản<select value={form.transfer_content_mode||"order"} onChange={e=>set("transfer_content_mode",e.target.value)}><option value="order">Theo đơn hàng</option><option value="customer_input">Khách hàng tự nhập</option></select><small>Chế độ “Khách hàng tự nhập” tạo QR không gắn nội dung chuyển khoản.</small></label>
-      {form.transfer_content_mode==="order"&&<label className="span-2">Nội dung chuyển khoản mặc định<input value={form.transfer_content_default||""} onChange={e=>set("transfer_content_default",e.target.value)} placeholder="VD: THANH TOAN HD"/><small>Nội dung này được tự điền khi tạo đơn và có thể sửa riêng từng đơn.</small></label>}
     </div></div>
     <div className="settings-section"><h3>Nội dung cuối hóa đơn</h3><div className="form-grid">
       <label className="span-2">Chính sách bảo hành<textarea value={form.warranty_note||""} onChange={e=>set("warranty_note",e.target.value)}/></label>

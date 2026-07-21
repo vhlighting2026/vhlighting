@@ -1,5 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm build"
+  "framework": "nextjs"
 }
